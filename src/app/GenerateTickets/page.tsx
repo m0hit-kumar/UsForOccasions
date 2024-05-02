@@ -6,9 +6,9 @@ import React, { useRef, useState } from 'react';
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { TicketStyle } from '@/_components/Datatype';
-
+import SendTambolaTickets from "@/_components/SendTambolaTickets"
 const GenerateTickets = () => {
-    const printRef = useRef(null);
+    const [ticketBinary, setTicketBinary] = useState<string[]>([]);
     const [hostName, setHostName] = useState<string>("HostName");
     const [progressValue, setProgressValue] = useState<number>(100 / 3);
     const [sectionValue, setSectinValue] = useState<number>(1);
@@ -21,6 +21,7 @@ const GenerateTickets = () => {
         setProgressValue(prevValue => prevValue - 100 / 3);
         setSectinValue(prevValue => prevValue - 1);
     }
+    console.log("mainpage", ticketBinary.length);
 
     return (
         <div
@@ -36,9 +37,8 @@ const GenerateTickets = () => {
             </div>
             <div>
                 {sectionValue == 1 && <CustomizeTambolaTicket setTicketStyle={setTicketStyle} ticketStyle={ticketStyle} hostName={hostName} setHostName={setHostName} />}
-                {sectionValue == 2 && <TicketGenrator ticketStyle={ticketStyle} hostName={hostName} />}
-
-                {sectionValue == 3 && <div>section3</div>}
+                {sectionValue == 2 && <TicketGenrator ticketStyle={ticketStyle} hostName={hostName} setTicketBinary={setTicketBinary} />}
+                {sectionValue == 3 && <SendTambolaTickets ticketBinary={ticketBinary} />}
 
             </div>
         </div >

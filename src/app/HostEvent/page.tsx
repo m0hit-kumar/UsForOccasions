@@ -1,7 +1,6 @@
 "use client"
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
-
+import React, { useState, useRef, useEffect } from 'react';
 import { CreateRoomDialog } from "@/_components/CreateRoomDialog"
 export default function HostEvent() {
 
@@ -9,26 +8,33 @@ export default function HostEvent() {
     const [previousNumber, SetPreviousNumber] = useState<number>(0);
     const [numberToPick, setNumberToPick] = useState<number[]>(Array.from(Array(100).keys(), item => item + 1));
     const [pickedNumber, setPickedNumber] = useState<number[]>([]);
+    const audioRef = useRef<HTMLAudioElement>(null);
+    useEffect(() => {
+        const audioElement = audioRef.current;
+        if (audioElement) {
+            audioElement.load();
+        }
+    }, []);
 
     const GenerateNumber = () => {
+        audioRef.current?.play();
         const newNumber = (Math.floor(Math.random() * numberToPick.length))
         SetCurrentNumber(newNumber)
         SetPreviousNumber(currentNumber)
         if (newNumber != 0) {
             setNumberToPick((prevState) => prevState.filter((num) => num !== newNumber));
             setPickedNumber([...pickedNumber, newNumber])
-        }  
+        }
     }
 
-
+  
     const divs = [];
     for (let i = 1; i <= 100; i++) {
         const isPicked = pickedNumber.includes(i);
-
         divs.push(
             <div
-                id={`div_${i}`}
                 key={i}
+                id={`div_${i}`}
                 className={`border text-center flex justify-center items-center w-10 h-10 border-cyan-900 ${isPicked ? "bg-cyan-400" : ""}`}
             >
                 {i}
@@ -43,9 +49,13 @@ export default function HostEvent() {
             <div className='flex justify-between'>
                 <div className="flex flex-col justify-between">
                     <div>
+                        <audio id="mytrack" ref={audioRef}>
+                            <source src="./genrate.mp3" />
+                        </audio>
                         <Button size="lg" onClick={GenerateNumber}>
                             Draw Number
                         </Button>
+                        
                         <div className='flex flex-col items-center py-4'>
                             <h1 className='pb-3'>Current Number</h1>
                             <div className='border flex justify-center items-center w-10 h-10 border-cyan-900'>{currentNumber ? currentNumber : "-"}</div>

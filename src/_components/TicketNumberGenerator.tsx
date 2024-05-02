@@ -1,4 +1,7 @@
 
+import html2canvas from "html2canvas";
+
+
 export const GenerateTicketNumbers = () => {
     const ToBePick = Array.from(Array(100).keys(), item => item + 1);
     const PickedNumber = new Set();
@@ -28,10 +31,10 @@ export const GenerateTicketGird = () => {
     return [ToInt(row1), ToInt(row2), ToInt(row3)];
 }
 
-export function FillTambolaTicket():number[] {
+export function FillTambolaTicket(): number[] {
     const [row1, row2, row3] = GenerateTicketGird();
     const pickedNumbers = Array.from(GenerateTicketNumbers());
-     const grid1 = new Array(9).fill(0);
+    const grid1 = new Array(9).fill(0);
     const grid2 = new Array(9).fill(0);
     const grid3 = new Array(9).fill(0);
     for (let j = 0; j < 5; j++) {
@@ -48,4 +51,22 @@ export function FillTambolaTicket():number[] {
         grid3[columnIndex] = pickedNumbers.slice(10, 16)[j];
     }
     return grid1.concat(grid2, grid3)
+};
+
+export const handleDownloadImage = async (ticketId: string) => {
+    const element = document.getElementById(ticketId);
+    if (element) {
+        const canvas = await html2canvas(element);
+        const data = canvas.toDataURL('image/jpg'),
+            link = document.createElement('a');
+        link.href = data;
+
+        link.download = `${ticketId}.jpg`;
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+    else { console.error('Element with ID "print" not found.'); }
+
 };
