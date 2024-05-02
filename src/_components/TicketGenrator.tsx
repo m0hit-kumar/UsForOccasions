@@ -21,42 +21,42 @@ const TicketGenrator = ({ ticketStyle, hostName, setTicketBinary }: ITicketGenra
   const [genrateOn, setGenrateOn] = useState<boolean>(false)
   const [progress, setProgress] = React.useState(0)
 
-  const setBinaryTicketsValue = async () => {
-    const ticketsBinary: string[] = [];
-    const batchSize = 5; // Adjust based on your performance needs and memory constraints
+  // const setBinaryTicketsValue = async () => {
+  //   const ticketsBinary: string[] = [];
+  //   const batchSize = 5; // Adjust based on your performance needs and memory constraints
 
-    for (let i = 0; i < ticketsIds.length; i += batchSize) {
-      const ticketBatch = ticketsIds.slice(i, Math.min(i + batchSize, ticketsIds.length));
+  //   for (let i = 0; i < ticketsIds.length; i += batchSize) {
+  //     const ticketBatch = ticketsIds.slice(i, Math.min(i + batchSize, ticketsIds.length));
 
-      // Generate images for the current ticket batch in parallel using Promise.all
-      const imagePromises = ticketBatch.map(async (ticketId) => {
-        const element = document.getElementById(ticketId);
-        if (element) {
-          const canvas = await html2canvas(element);
-          const data = canvas.toDataURL('image/jpg');
-          return data.split(",")[1];
-        } else {
-          console.error(`Element with ID "${ticketId}" not found.`);
-          return null; // Handle missing elements gracefully
-        }
-      });
+  //     // Generate images for the current ticket batch in parallel using Promise.all
+  //     const imagePromises = ticketBatch.map(async (ticketId) => {
+  //       const element = document.getElementById(ticketId);
+  //       if (element) {
+  //         const canvas = await html2canvas(element);
+  //         const data = canvas.toDataURL('image/jpg');
+  //         return data.split(",")[1];
+  //       } else {
+  //         console.error(`Element with ID "${ticketId}" not found.`);
+  //         return null; // Handle missing elements gracefully
+  //       }
+  //     });
 
-      // Wait for all promises in the batch to resolve before updating state
-      const resolvedImages = await Promise.all(imagePromises);
+  //     // Wait for all promises in the batch to resolve before updating state
+  //     const resolvedImages = await Promise.all(imagePromises);
 
-      // Filter out any null values (from missing elements) before pushing
-      ticketsBinary.push(...resolvedImages.filter((image) => image !== null));
+  //     // Filter out any null values (from missing elements) before pushing
+  //     ticketsBinary.push(...resolvedImages.filter((image) => image !== null));
 
-      console.log("image", i)
-      setProgress(i)
-    }
+  //     console.log("image", i)
+  //     setProgress(i)
+  //   }
 
-    console.log("ticketsBinary", ticketsBinary.length);
-    await setTicketBinary(ticketsBinary);
-    if (ticketsIds.length === ticketsBinary.length) {
-      setGenrateOn(false); // Update generation state after all images are processed
-    }
-  };
+  //   console.log("ticketsBinary", ticketsBinary.length);
+  //   await setTicketBinary(ticketsBinary);
+  //   if (ticketsIds.length === ticketsBinary.length) {
+  //     setGenrateOn(false); // Update generation state after all images are processed
+  //   }
+  // };
 
   const downloadAll = async () => {
     const zip = new JSZip();
@@ -95,7 +95,7 @@ const TicketGenrator = ({ ticketStyle, hostName, setTicketBinary }: ITicketGenra
     }
     setTicketsIds(listIds)
     setTickets(generatedTickets);
-    await setBinaryTicketsValue();
+    // await setBinaryTicketsValue();
   }
 
   return (
