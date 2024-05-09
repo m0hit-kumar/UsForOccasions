@@ -18,16 +18,21 @@ export default function HostEvent() {
 
     const GenerateNumber = () => {
         audioRef.current?.play();
-        const newNumber = (Math.floor(Math.random() * numberToPick.length))
+        const newNumber = numberToPick[Math.floor(Math.random() * numberToPick.length)]
         SetCurrentNumber(newNumber)
         SetPreviousNumber(currentNumber)
-        if (newNumber != 0) {
-            setNumberToPick((prevState) => prevState.filter((num) => num !== newNumber));
-            setPickedNumber([...pickedNumber, newNumber])
-        }
+        setNumberToPick(prevNumbers => {
+            return prevNumbers.filter(num => num !== newNumber);
+        });
+        setPickedNumber(prevPickedNumbers => {
+            return [...prevPickedNumbers, newNumber];
+        });
+        console.log("numberToPick", numberToPick)
+        console.log("pickedNumber", pickedNumber)
+
     }
 
-  
+
     const divs = [];
     for (let i = 1; i <= 100; i++) {
         const isPicked = pickedNumber.includes(i);
@@ -55,7 +60,7 @@ export default function HostEvent() {
                         <Button size="lg" onClick={GenerateNumber}>
                             Draw Number
                         </Button>
-                        
+
                         <div className='flex flex-col items-center py-4'>
                             <h1 className='pb-3'>Current Number</h1>
                             <div className='border flex justify-center items-center w-10 h-10 border-cyan-900'>{currentNumber ? currentNumber : "-"}</div>
