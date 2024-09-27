@@ -90,7 +90,8 @@ const TicketGenrator = ({ ticketStyle, hostName, setTicketBinary }: ITicketGenra
     for (let i = 0; i < nop; i++) {
       const ticketid = `ticket${1000 + i}`
       listIds.push(`ticket${1000 + i}`)
-      generatedTickets.push(<div className='m-3'><TabolaTicketTemplate key={i} ticketNumbers={FillTambolaTicket()} hostName={hostName} ticketStyle={ticketStyle} ticketId={ticketid} code={`${1000 + i}`} />                <Button onClick={() => handleDownloadImage(ticketid)}>Download Ticket</Button>
+      generatedTickets.push(<div className='m-3'>
+        <TabolaTicketTemplate key={i} ticketNumbers={FillTambolaTicket()} hostName={hostName} ticketStyle={ticketStyle} ticketId={ticketid} code={`${1000 + i}`} />                <Button onClick={() => handleDownloadImage(ticketid)}>Download Ticket</Button>
       </div>);
     }
     setTicketsIds(listIds)
