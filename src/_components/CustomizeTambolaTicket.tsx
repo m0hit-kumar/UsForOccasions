@@ -1,10 +1,22 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import html2canvas from "html2canvas";
-import React, { useState } from "react";
-import { TicketStyle } from "./Datatype";
-import TabolaTicketTemplate from "@/_components/TabolaTicketTemplate";
+import { Card, CardContent } from "@/components/ui/card";
+import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
+import TabolaTicketTemplate from "./TabolaTicketTemplate";
+import { TicketService } from "@/network/tickets";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
+import { useRouter } from "next/navigation";
+
+interface TicketStyle {
+  backgroundColor: string;
+  borderColor: string;
+  color: string;
+}
 
 interface ICustomizeTambolaTicket {
   setTicketStyle: React.Dispatch<React.SetStateAction<TicketStyle>>;
@@ -19,18 +31,30 @@ const CustomizeTambolaTicket = ({
   hostName,
   ticketStyle,
 }: ICustomizeTambolaTicket) => {
+  const [isMounted, setIsMounted] = useState(false);
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const { saveTicketsLocal, getTicketsLocal } = TicketService();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const handleBackgroundColorChange = (newColor: string) => {
     setTicketStyle({
       ...ticketStyle,
       backgroundColor: newColor,
     });
   };
+
   const handleTextColorChange = (newColor: string) => {
     setTicketStyle({
       ...ticketStyle,
       color: newColor,
     });
   };
+
   const handleBorderColorChange = (newColor: string) => {
     setTicketStyle({
       ...ticketStyle,
@@ -39,78 +63,174 @@ const CustomizeTambolaTicket = ({
   };
 
   const handleDownloadImage = async (ticketId: string) => {
-    const element = document.getElementById(ticketId);
+    try {
+      const html2canvas = (await import("html2canvas")).default;
+      const element = document.getElementById(ticketId);
 
-    if (element) {
-      const canvas = await html2canvas(element);
-      const data = canvas.toDataURL("image/jpg"),
-        link = document.createElement("a");
-
-      link.href = data;
-      link.download = "SampleTicket.jpg";
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      console.error('Element with ID "print" not found.');
+      if (element) {
+        const canvas = await html2canvas(element);
+        const data = canvas.toDataURL("image/jpg");
+        const link = document.createElement("a");
+        link.href = data;
+        link.download = "SampleTicket.jpg";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    } catch (error) {
+      console.error("Error generating image:", error);
     }
   };
 
-  return (
-    <div className="flex flex-col lg:flex-row justify-between">
-      <div className="printme">
-        <TabolaTicketTemplate
-          ticketNumbers={[
-            89, 95, 0, 99, 0, 55, 79, 0, 0, 0, 1, 0, 9, 0, 65, 83, 90, 0, 36, 0,
-            73, 31, 0, 57, 0, 21, 0,
-          ]}
-          hostName={hostName}
-          ticketStyle={ticketStyle}
-          ticketId={"sampleTicket"}
-          code={"1234"}
-        />
+  // Return null or loading state while client-side rendering is happening
+  if (!isMounted) {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        Loading...
       </div>
-      <div className="mt-10  lg:mt-0 lg:pl-[300px] w-screen flex flex-col justify-between">
-        <Label>HostName</Label>
-        <Input
-          maxLength={30}
-          onChange={(e) => setHostName(e.target.value)}
-          value={hostName}
-          className="my-3"
-          placeholder="HostName"
-        />
-        <Label>Background</Label>
-        <Input
-          id="backgroundColor"
-          onChange={(e) => handleBackgroundColorChange(e.target.value)}
-          value={ticketStyle.backgroundColor}
-          className="my-3"
-          type="color"
-        />
+    );
+  }
 
-        <Label>Border</Label>
-        <Input
-          id="borderColor"
-          onChange={(e) => handleBorderColorChange(e.target.value)}
-          value={ticketStyle.borderColor}
-          className="my-3"
-          type="color"
-        />
-        <Label>Text</Label>
-        <Input
-          id="textColor"
-          onChange={(e) => handleTextColorChange(e.target.value)}
-          value={ticketStyle.color}
-          className="my-3"
-          type="color"
-        />
-        <Button onClick={() => handleDownloadImage("sampleTicket")}>
-          Download Sample
-        </Button>
+  return (
+    <div className="container mx-auto px-4 py-6">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Preview Section */}
+        <div className="w-full lg:w-1/2 flex justify-center items-start">
+          <div className="printme" id="sampleTicket">
+            <TabolaTicketTemplate
+              ticketNumbers={[
+                89, 95, 0, 99, 0, 55, 79, 0, 0, 0, 1, 0, 9, 0, 65, 83, 90, 0,
+                36, 0, 73, 31, 0, 57, 0, 21, 0,
+              ]}
+              hostName={hostName}
+              ticketStyle={ticketStyle}
+              ticketId={"sampleTicket"}
+              code={"1234"}
+            />
+          </div>
+        </div>
+
+        {/* Customization Controls Section */}
+        <div className="w-full lg:w-1/2">
+          <Card>
+            <CardContent className="p-6 space-y-4">
+              <div className="space-y-2">
+                <h1 className="text-xs	text-red-600">
+                  * Don&apos;t forget to save ticket after customization
+                </h1>
+
+                <Label htmlFor="hostname">Host Name</Label>
+
+                <Input
+                  id="hostname"
+                  maxLength={30}
+                  onChange={(e) => setHostName(e.target.value)}
+                  value={hostName}
+                  placeholder="Enter host name"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="backgroundColor">Background Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="backgroundColor"
+                    onChange={(e) =>
+                      handleBackgroundColorChange(e.target.value)
+                    }
+                    value={ticketStyle.backgroundColor}
+                    type="color"
+                    className="w-20"
+                  />
+                  <Input
+                    value={ticketStyle.backgroundColor}
+                    onChange={(e) =>
+                      handleBackgroundColorChange(e.target.value)
+                    }
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="borderColor">Border Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="borderColor"
+                    onChange={(e) => handleBorderColorChange(e.target.value)}
+                    value={ticketStyle.borderColor}
+                    type="color"
+                    className="w-20"
+                  />
+                  <Input
+                    value={ticketStyle.borderColor}
+                    onChange={(e) => handleBorderColorChange(e.target.value)}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="textColor">Text Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="textColor"
+                    onChange={(e) => handleTextColorChange(e.target.value)}
+                    value={ticketStyle.color}
+                    type="color"
+                    className="w-20"
+                  />
+                  <Input
+                    value={ticketStyle.color}
+                    onChange={(e) => handleTextColorChange(e.target.value)}
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                <Button
+                  className="flex-1"
+                  onClick={() => handleDownloadImage("sampleTicket")}
+                >
+                  Download Sample
+                </Button>
+                <Button
+                  className="flex-1"
+                  variant="outline"
+                  onClick={() => {
+                    saveTicketsLocal({
+                      textValue: ticketStyle.color,
+                      backgroundValue: ticketStyle.backgroundColor,
+                      borderValue: ticketStyle.borderColor,
+                      hostNameValue: hostName,
+                    });
+
+                    toast({
+                      description: "Ticket design has been saved.",
+                      action: (
+                        <ToastAction
+                          altText="Create Room"
+                          onClick={() => router.push("/HostEvent")}
+                        >
+                          Create Room
+                        </ToastAction>
+                      ),
+                    });
+                  }}
+                >
+                  Save Ticket
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
 };
 
-export default CustomizeTambolaTicket;
+// Export the component with no SSR
+export default dynamic(() => Promise.resolve(CustomizeTambolaTicket), {
+  ssr: false,
+});

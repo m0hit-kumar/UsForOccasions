@@ -1,47 +1,89 @@
+"use client";
+import CustomizeTambolaTicket from "@/_components/CustomizeTambolaTicket";
+import TicketGenrator from "@/_components/TicketGenrator";
+import React, { useRef, useState } from "react";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { TicketStyle } from "@/_components/Datatype";
+import SendTambolaTickets from "@/_components/SendTambolaTickets";
 
-"use client"
-import CustomizeTambolaTicket from '@/_components/CustomizeTambolaTicket'
-import TicketGenrator from '@/_components/TicketGenrator'
-import React, { useRef, useState } from 'react';
-import { Progress } from "@/components/ui/progress"
-import { Button } from "@/components/ui/button"
-import { TicketStyle } from '@/_components/Datatype';
-import SendTambolaTickets from "@/_components/SendTambolaTickets"
 const GenerateTickets = () => {
-    const [ticketBinary, setTicketBinary] = useState<string[]>([]);
-    const [hostName, setHostName] = useState<string>("HostName");
-    const [progressValue, setProgressValue] = useState<number>(100 / 3);
-    const [sectionValue, setSectinValue] = useState<number>(1);
-    const [ticketStyle, setTicketStyle] = useState<TicketStyle>({ backgroundColor: "#ffffff", borderColor: "#000000", color: "#000000" })
-    const increment = () => {
-        setProgressValue(prevValue => prevValue + 100 / 3);
-        setSectinValue(prevValue => prevValue + 1);
-    }
-    const decrement = () => {
-        setProgressValue(prevValue => prevValue - 100 / 3);
-        setSectinValue(prevValue => prevValue - 1);
-    }
-    console.log("mainpage", ticketBinary.length);
+  const [ticketBinary, setTicketBinary] = useState<string[]>([]);
+  const [hostName, setHostName] = useState<string>("HostName");
+  const [progressValue, setProgressValue] = useState<number>(100 / 3);
+  const [sectionValue, setSectinValue] = useState<number>(1);
+  const [ticketStyle, setTicketStyle] = useState<TicketStyle>({
+    backgroundColor: "#ffffff",
+    borderColor: "#000000",
+    color: "#000000",
+  });
 
-    return (
-        <div
-            className='flex-1 container mx-auto py-12 px-6 md:px-0'>
-            <h2 className="text-3xl font-bold mb-5">Welcome to Tambola</h2>
-            <Progress value={progressValue} className="w-full bg-white shadow-sm my-4" />
-            <div className='flex justify-between'>
-                <p className="text-lg mb-8">Generate, distribute, and play Tambola tickets online or offline.</p>
-                <div>
-                    <Button className='mx-1' onClick={decrement} disabled={progressValue <= (100 / 3)}>Previous</Button>
-                    <Button className='mx-1' onClick={increment} disabled={progressValue === 100}>Next</Button>
-                </div>
-            </div>
-            <div>
-                {sectionValue == 1 && <CustomizeTambolaTicket setTicketStyle={setTicketStyle} ticketStyle={ticketStyle} hostName={hostName} setHostName={setHostName} />}
-                {sectionValue == 2 && <TicketGenrator ticketStyle={ticketStyle} hostName={hostName} setTicketBinary={setTicketBinary} />}
-                {sectionValue == 3 && <SendTambolaTickets ticketBinary={ticketBinary} />}
+  const increment = () => {
+    setProgressValue((prevValue) => prevValue + 100 / 3);
+    setSectinValue((prevValue) => prevValue + 1);
+  };
 
-            </div>
-        </div >
-    )
-}
+  const decrement = () => {
+    setProgressValue((prevValue) => prevValue - 100 / 3);
+    setSectinValue((prevValue) => prevValue - 1);
+  };
+
+  return (
+    <div className="flex-1 container mx-auto py-6 sm:py-12 px-4 sm:px-6">
+      <div className="space-y-4 sm:space-y-5">
+        <h2 className="text-3xl font-bold mb-5">Welcome to Tambola</h2>
+
+        <Progress
+          value={progressValue}
+          className="w-full bg-white shadow-sm my-4"
+        />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <p className="text-lg">
+            Generate, distribute, and play Tambola tickets online or offline.
+          </p>
+
+          <div className="flex gap-2 self-end">
+            <Button
+              className="mx-1"
+              onClick={decrement}
+              disabled={progressValue <= 100 / 3}
+            >
+              Previous
+            </Button>
+            <Button
+              className="mx-1"
+              onClick={increment}
+              disabled={progressValue === 100}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-6 sm:mt-8">
+        {sectionValue == 1 && (
+          <CustomizeTambolaTicket
+            setTicketStyle={setTicketStyle}
+            ticketStyle={ticketStyle}
+            hostName={hostName}
+            setHostName={setHostName}
+          />
+        )}
+        {sectionValue == 2 && (
+          <TicketGenrator
+            ticketStyle={ticketStyle}
+            hostName={hostName}
+            setTicketBinary={setTicketBinary}
+          />
+        )}
+        {sectionValue == 3 && (
+          <SendTambolaTickets ticketBinary={ticketBinary} />
+        )}
+      </div>
+    </div>
+  );
+};
+
 export default GenerateTickets;
