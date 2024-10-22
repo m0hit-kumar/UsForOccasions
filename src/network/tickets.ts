@@ -1,14 +1,15 @@
 "use client";
 
- 
+import axios from "axios";
+
 interface TicketsData {
   hostNameValue: string;
   backgroundValue: string;
   borderValue: string;
   textValue: string;
 }
-export const TicketService = () => {
 
+export const TicketService = () => {
   const setCookie = (name: string, value: string, hours: number): void => {
     const date = new Date();
     date.setTime(date.getTime() + hours * 60 * 60 * 1000);
@@ -18,37 +19,20 @@ export const TicketService = () => {
     )}; ${expires}; path=/`;
   };
 
-  const saveTicketsLocal = ({
-    hostNameValue,
-    backgroundValue,
-    borderValue,
-    textValue,
-  }: TicketsData): void => {
-    const ticketsData = {
-      HostName: hostNameValue,
-      Background: backgroundValue,
-      Border: borderValue,
-      Text: textValue,
-      SystemID: generateUniqueSystemID(),
-    };
-
-    setCookie("TicketsData", JSON.stringify(ticketsData), 6); // Store all data in one cookie
-    console.log(getTicketsLocal());
-
-    
-  };
-
-  const generateUniqueSystemID = (): string => {
-    const timestamp = Date.now();
-    const randomNum = Math.floor(Math.random() * 10000);
-    return `${timestamp}-${randomNum}`;
+  const generateUniqueRoomID = (): string => {
+    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let uniqueID = "";
+    for (let i = 0; i < 5; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      uniqueID += characters[randomIndex];
+    }
+    return uniqueID;
   };
 
   const getTicketsLocal = (): { [key: string]: string } | null => {
     const cookieValue = document.cookie
       .split("; ")
       .find((row) => row.startsWith("TicketsData="));
-
     if (cookieValue) {
       const jsonString = decodeURIComponent(cookieValue.split("=")[1]);
       return JSON.parse(jsonString);
@@ -56,5 +40,88 @@ export const TicketService = () => {
     return null;
   };
 
-  return { saveTicketsLocal, getTicketsLocal };
+  const saveTicketsLocal = ({
+    hostNameValue,
+    backgroundValue,
+    borderValue,
+    textValue,
+  }: TicketsData): any => {
+    const existingTickets = getTicketsLocal();
+
+    const ticketsData = {
+      HostName: hostNameValue,
+      Background: backgroundValue,
+      Border: borderValue,
+      Text: textValue,
+      SystemID: existingTickets
+        ? existingTickets.SystemID
+        : generateUniqueRoomID(),
+    };
+
+    setCookie("TicketsData", JSON.stringify(ticketsData), 6);
+    return ticketsData;
+  };
+
+  const URL = "http://localhost:8080/api";
+  const saveTicketToDB = (
+    { hostNameValue, backgroundValue, borderValue, textValue }: TicketsData,
+    callback: (success: boolean, error?: any, response?: any) => void
+  ) => {
+    var ticket = saveTicketsLocal({
+      hostNameValue,
+      backgroundValue,
+      borderValue,
+      textValue,
+    });
+    axios({
+      method: "post",
+      withCredentials: true,
+      url: `${URL}/create_ticketDesign`,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: {
+        hostName: ticket.HostName,
+        background: ticket.Background,
+        border: ticket.Border,
+        text: ticket.Text,
+        roomId: ticket.SystemID,
+      },
+    })
+      .then((response) => {
+        callback(true, null, response.data);
+      })
+      .catch((error) => {
+        callback(false, error);
+      });
+  };
+  const getTicketFromDB = (
+    { email, username, password }: any,
+    callback: (success: boolean, error?: any, response?: any) => void
+  ) => {
+    axios({
+      method: "post",
+      url: `${URL}/signup`,
+      data: {
+        username: username,
+        password: password,
+        email: email,
+      },
+    })
+      .then((response) => {
+        callback(true, null, response.data);
+      })
+      .catch((error) => {
+        callback(false, error);
+      })
+      .finally(() => console.log("Ticket Saved to Cloud"));
+  };
+
+  return {
+    saveTicketsLocal,
+    getTicketsLocal,
+    generateUniqueRoomID,
+    saveTicketToDB,
+    getTicketFromDB,
+  };
 };

@@ -6,16 +6,27 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { TicketStyle } from "@/_components/Datatype";
 import SendTambolaTickets from "@/_components/SendTambolaTickets";
+import { TicketService } from "@/network/tickets";
 
 const GenerateTickets = () => {
   const [ticketBinary, setTicketBinary] = useState<string[]>([]);
-  const [hostName, setHostName] = useState<string>("HostName");
   const [progressValue, setProgressValue] = useState<number>(100 / 3);
   const [sectionValue, setSectinValue] = useState<number>(1);
+  const {
+    saveTicketsLocal,
+    getTicketsLocal,
+    saveTicketToDB,
+    generateUniqueRoomID,
+  } = TicketService();
+  const localTicketDesign = getTicketsLocal();
+  const [hostName, setHostName] = useState<string>(
+    localTicketDesign?.HostName ?? "HostName"
+  );
+
   const [ticketStyle, setTicketStyle] = useState<TicketStyle>({
-    backgroundColor: "#ffffff",
-    borderColor: "#000000",
-    color: "#000000",
+    backgroundColor: localTicketDesign?.Background ?? "#ffffff",
+    borderColor: localTicketDesign?.Border ?? "#000000",
+    color: localTicketDesign?.Text ?? "#000000",
   });
 
   const increment = () => {

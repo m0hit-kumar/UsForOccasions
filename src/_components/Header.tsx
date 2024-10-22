@@ -36,7 +36,7 @@ export default function Header() {
             Offline Play
           </Link>
         </nav>
-        <AuthDialog />
+        <AuthDialog showButton={true} />
         {userEmail ? (
           <Button onClick={() => {}} size="sm">
             {userEmail}

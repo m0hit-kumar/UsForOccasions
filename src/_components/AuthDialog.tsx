@@ -14,21 +14,58 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
- import {
+import {
   NotificationMessage,
   NotificationProps,
   NotificationType,
 } from "./notification";
 import { AuthService } from "@/network/authConfig";
+import { useRouter, useSearchParams } from "next/navigation";
+interface IAuthDialog {
+  readonly defaultOpen?: boolean;
+  readonly redirectPath?: string;
+  readonly onAuthSuccess?: () => void;
+  readonly showButton?: boolean;
+}
 
-export default function AuthDialog() {
+export default function AuthDialog({
+  defaultOpen = false,
+  redirectPath,
+  onAuthSuccess,
+  showButton = true,
+}: IAuthDialog) {
   const { login, signup } = AuthService();
-  const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [isOpen, setIsOpen] = useState(defaultOpen);
   const [loginError, setLoginError] = useState("");
   const [signupError, setSignupError] = useState("");
   const [notification, setNotification] = useState<NotificationProps | null>(
     null
   );
+
+  useEffect(() => {
+    if (searchParams.get("auth") === "required") {
+      setIsOpen(true);
+    }
+  }, [searchParams]);
+
+  const handleNavigation = () => {
+    setIsOpen(false);
+
+    if (onAuthSuccess) {
+      onAuthSuccess();
+    }
+
+    if (redirectPath) {
+      router.push(redirectPath);
+    } else if (searchParams.get("auth") === "required") {
+      const returnTo = searchParams.get("returnTo") ?? "/";
+      router.push(returnTo);
+    } else {
+      router.refresh();
+    }
+  };
   const showNotification = (type: NotificationType, message: string) => {
     setNotification({ type, message });
   };
@@ -46,13 +83,13 @@ export default function AuthDialog() {
     login({ emailOrUsername, password }, (success, error, response) => {
       if (success) {
         showNotification("success", response.message);
+        handleNavigation();
       } else {
         console.error("Login failed:", error);
         showNotification("error", "Incorrect Credentials");
       }
     });
     setLoginError("");
-    setIsOpen(false);
   };
 
   const handleSignup = (e: React.FormEvent) => {
@@ -69,13 +106,13 @@ export default function AuthDialog() {
     signup({ email, username, password }, (success, error, response) => {
       if (success) {
         showNotification("success", response.message);
+        handleNavigation();
       } else {
         console.error("Signup failed:", error);
         showNotification("error", response.message);
       }
     });
     setSignupError("");
-    setIsOpen(false);
   };
 
   useEffect(() => {
@@ -87,14 +124,25 @@ export default function AuthDialog() {
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  const handleClose = () => {
+    setIsOpen(!isOpen);
+
+    if (searchParams.get("auth") === "required") {
+      router.push("/");
+    }
+  };
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogTrigger asChild>
-          <Button size="sm" disabled>
-            Login / Sign Up
-          </Button>
+          {showButton && (
+            <Button onClick={() => setIsOpen(true)} size="sm">
+              Login / Sign Up
+            </Button>
+          )}
         </DialogTrigger>
+        <div />
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Authentication</DialogTitle>
@@ -165,6 +213,7 @@ export default function AuthDialog() {
             </TabsContent>
           </Tabs>
         </DialogContent>
+        <div />
       </Dialog>
       {notification && (
         <NotificationMessage
