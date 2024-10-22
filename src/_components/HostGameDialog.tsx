@@ -13,22 +13,37 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import TabolaTicketTemplate from "./TabolaTicketTemplate";
+import { TicketService } from "@/network/tickets";
+import { TicketStyle } from "./Datatype";
 
 const HostGameDialog = () => {
   const router = useRouter();
+  const {
+    saveTicketsLocal,
+    getTicketsLocal,
+    saveTicketToDB,
+    generateUniqueRoomID,
+  } = TicketService();
   const defaultTicket = [
     [1, 15, 0, 37, 49, 0, 68, 72, 90],
     [5, 0, 22, 39, 0, 59, 0, 79, 0],
     [0, 18, 26, 0, 53, 62, 70, 0, 88],
   ];
   const [open, setOpen] = useState<boolean>(false);
+  const localTicketDesign = getTicketsLocal();
 
+  const ticketStyle: TicketStyle = {
+    backgroundColor: localTicketDesign?.Background ?? "#ffffff",
+    borderColor: localTicketDesign?.Border ?? "#000000",
+    color: localTicketDesign?.Text ?? "#000000",
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="lg">Host Game</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
           <DialogTitle>Create Private Room</DialogTitle>
           <DialogDescription>
@@ -36,28 +51,18 @@ const HostGameDialog = () => {
             customize it or use as is.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4">
-          <Card className="w-full max-w-[300px] mx-auto">
-            <CardContent className="p-2">
-              <table className="w-full border-collapse">
-                <tbody>
-                  {defaultTicket.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                      {row.map((number, colIndex) => (
-                        <td
-                          key={colIndex}
-                          className="border border-gray-300 p-2 text-center"
-                        >
-                          {number !== 0 ? number : ""}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </CardContent>
-          </Card>
-        </div>
+
+        <TabolaTicketTemplate
+          ticketNumbers={[
+            89, 95, 0, 99, 0, 55, 79, 0, 0, 0, 1, 0, 9, 0, 65, 83, 90, 0, 36, 0,
+            73, 31, 0, 57, 0, 21, 0,
+          ]}
+          hostName={localTicketDesign?.HostName ?? "HostName"}
+          ticketStyle={ticketStyle}
+          ticketId={"sampleTicket"}
+          code={"1234"}
+        />
+
         <DialogFooter className="sm:justify-between">
           <Button
             variant="outline"

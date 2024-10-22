@@ -5,11 +5,17 @@ import TicketIcon from "@/_components/TicketIcon";
 import DownloadIcon from "@/_components/DownloadIcon";
 import ShareIcon from "@/_components/ShareIcon";
 import HostGameDialog from "@/_components/HostGameDialog";
+import InfoBox from "@/_components/InfoBox";
 
 export default function Home() {
   const router = useRouter();
   return (
-    <main className="flex-1 container mx-auto py-12 px-6 md:px-0">
+    <main className="flex-1 container mx-auto py-8 px-6 md:px-0">
+      <InfoBox
+        title="Sign-in Information"
+        subtitle="Only the host is required to sign in. Participants don't need to
+            sign in to play."
+      />
       <section className="grid md:grid-cols-2 gap-8">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-bold mb-4">Play Online</h2>

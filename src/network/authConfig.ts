@@ -11,6 +11,7 @@ export const AuthService = () => {
     axios({
       method: "post",
       url: `${URL}/login`,
+      withCredentials: true,
       data: {
         username: emailOrUsername,
         password: password,

@@ -35,7 +35,12 @@ const CustomizeTambolaTicket = ({
   const { toast } = useToast();
   const router = useRouter();
 
-  const { saveTicketsLocal, getTicketsLocal } = TicketService();
+  const {
+    saveTicketsLocal,
+    getTicketsLocal,
+    saveTicketToDB,
+    generateUniqueRoomID,
+  } = TicketService();
 
   useEffect(() => {
     setIsMounted(true);
@@ -199,24 +204,35 @@ const CustomizeTambolaTicket = ({
                   className="flex-1"
                   variant="outline"
                   onClick={() => {
-                    saveTicketsLocal({
-                      textValue: ticketStyle.color,
-                      backgroundValue: ticketStyle.backgroundColor,
-                      borderValue: ticketStyle.borderColor,
-                      hostNameValue: hostName,
-                    });
-
-                    toast({
-                      description: "Ticket design has been saved.",
-                      action: (
-                        <ToastAction
-                          altText="Create Room"
-                          onClick={() => router.push("/HostEvent")}
-                        >
-                          Create Room
-                        </ToastAction>
-                      ),
-                    });
+                    saveTicketToDB(
+                      {
+                        textValue: ticketStyle.color,
+                        backgroundValue: ticketStyle.backgroundColor,
+                        borderValue: ticketStyle.borderColor,
+                        hostNameValue: hostName,
+                      },
+                      (success, error, response) => {
+                        if (success) {
+                          console.log(response);
+                          toast({
+                            description: "Ticket design has been saved.",
+                            action: (
+                              <ToastAction
+                                altText="Create Room"
+                                onClick={() => router.push("/HostEvent")}
+                              >
+                                Create Room
+                              </ToastAction>
+                            ),
+                          });
+                        } else {
+                          toast({
+                            title: "Try Again!",
+                            description: "Ticket design has was not saved.",
+                          });
+                        }
+                      }
+                    );
                   }}
                 >
                   Save Ticket

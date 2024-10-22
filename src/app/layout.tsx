@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className=" overflow-x-hidden flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
+        <div className="overflow-x-hidden flex flex-col h-screen bg-gray-100 dark:bg-grey-900">
           <Header />
           {children}
           <Footer />
