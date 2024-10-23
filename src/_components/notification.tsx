@@ -1,9 +1,5 @@
-export type NotificationType = "success" | "error" | "info" | null;
+import { NotificationProps, NotificationType } from "./Datatype";
 
-export interface NotificationProps {
-  type: NotificationType;
-  message: string;
-}
 export const NotificationMessage: React.FC<NotificationProps> = ({
   type,
   message,

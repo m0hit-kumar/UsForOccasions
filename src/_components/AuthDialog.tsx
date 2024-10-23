@@ -14,13 +14,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { AlertCircle } from "lucide-react";
-import {
-  NotificationMessage,
-  NotificationProps,
-  NotificationType,
-} from "./notification";
+import { NotificationMessage } from "./notification";
 import { AuthService } from "@/network/authConfig";
 import { useRouter, useSearchParams } from "next/navigation";
+import { NotificationProps, NotificationType } from "./Datatype";
 interface IAuthDialog {
   readonly defaultOpen?: boolean;
   readonly redirectPath?: string;
