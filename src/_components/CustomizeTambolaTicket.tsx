@@ -11,12 +11,7 @@ import { TicketService } from "@/network/tickets";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useRouter } from "next/navigation";
-
-interface TicketStyle {
-  backgroundColor: string;
-  borderColor: string;
-  color: string;
-}
+import { TicketStyle } from "./Datatype";
 
 interface ICustomizeTambolaTicket {
   setTicketStyle: React.Dispatch<React.SetStateAction<TicketStyle>>;

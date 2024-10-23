@@ -1,13 +1,7 @@
 "use client";
 
+import { TicketsData } from "@/_components/Datatype";
 import axios from "axios";
-
-interface TicketsData {
-  hostNameValue: string;
-  backgroundValue: string;
-  borderValue: string;
-  textValue: string;
-}
 
 export const TicketService = () => {
   const setCookie = (name: string, value: string, hours: number): void => {
@@ -40,6 +34,19 @@ export const TicketService = () => {
     return null;
   };
 
+  const getTicketBasedOnRoomId = (
+    roomId: string
+  ): { [key: string]: string } | null => {
+    const cookieValue = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith(`${roomId}=`));
+    if (cookieValue) {
+      const jsonString = decodeURIComponent(cookieValue.split("=")[1]);
+      return JSON.parse(jsonString);
+    }
+    return null;
+  };
+
   const saveTicketsLocal = ({
     hostNameValue,
     backgroundValue,
@@ -62,7 +69,10 @@ export const TicketService = () => {
     return ticketsData;
   };
 
+  // Network calls
+
   const URL = "http://localhost:8080/api";
+
   const saveTicketToDB = (
     { hostNameValue, backgroundValue, borderValue, textValue }: TicketsData,
     callback: (success: boolean, error?: any, response?: any) => void
@@ -96,17 +106,13 @@ export const TicketService = () => {
       });
   };
   const getTicketFromDB = (
-    { email, username, password }: any,
+    { roomId }: any,
     callback: (success: boolean, error?: any, response?: any) => void
   ) => {
     axios({
-      method: "post",
-      url: `${URL}/signup`,
-      data: {
-        username: username,
-        password: password,
-        email: email,
-      },
+      method: "get",
+      url: `${URL}/ticketDesign/${roomId}`,
+      withCredentials: true,
     })
       .then((response) => {
         callback(true, null, response.data);
@@ -114,7 +120,7 @@ export const TicketService = () => {
       .catch((error) => {
         callback(false, error);
       })
-      .finally(() => console.log("Ticket Saved to Cloud"));
+      .finally(() => console.log("Room joined"));
   };
 
   return {
@@ -123,5 +129,7 @@ export const TicketService = () => {
     generateUniqueRoomID,
     saveTicketToDB,
     getTicketFromDB,
+    getTicketBasedOnRoomId,
+    setCookie,
   };
 };

@@ -1,7 +1,7 @@
 "use client";
 import CustomizeTambolaTicket from "@/_components/CustomizeTambolaTicket";
 import TicketGenrator from "@/_components/TicketGenrator";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { TicketStyle } from "@/_components/Datatype";
@@ -17,6 +17,7 @@ const GenerateTickets = () => {
     getTicketsLocal,
     saveTicketToDB,
     generateUniqueRoomID,
+    getTicketFromDB,
   } = TicketService();
   const localTicketDesign = getTicketsLocal();
   const [hostName, setHostName] = useState<string>(

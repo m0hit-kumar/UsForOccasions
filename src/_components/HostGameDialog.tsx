@@ -19,12 +19,7 @@ import { TicketStyle } from "./Datatype";
 
 const HostGameDialog = () => {
   const router = useRouter();
-  const {
-    saveTicketsLocal,
-    getTicketsLocal,
-    saveTicketToDB,
-    generateUniqueRoomID,
-  } = TicketService();
+  const { getTicketsLocal } = TicketService();
   const defaultTicket = [
     [1, 15, 0, 37, 49, 0, 68, 72, 90],
     [5, 0, 22, 39, 0, 59, 0, 79, 0],
