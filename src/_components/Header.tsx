@@ -36,7 +36,7 @@ export default function Header() {
             <div className="container mx-auto flex items-center justify-between">
                 <div className="flex items-center">
                     <BirdIcon className="h-8 w-8 text-primary" />
-                    <Link href="/" className="text-2xl font-bold ml-2">Tombola</Link>
+                    <Link href="/" className="text-2xl font-bold ml-2">Tambola</Link>
                 </div>
                 <nav className="hidden md:flex items-center space-x-6">
                     <Link className="text-gray-600 hover:text-primary" href="/">
