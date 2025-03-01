@@ -83,6 +83,7 @@ const GenerateTickets = () => {
             setHostName={setHostName}
           />
         )}
+        
         {sectionValue == 2 && (
           <TicketGenrator
             ticketStyle={ticketStyle}

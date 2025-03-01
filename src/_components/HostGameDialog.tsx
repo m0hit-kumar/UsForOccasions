@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,20 +12,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
 import TabolaTicketTemplate from "./TabolaTicketTemplate";
 import { TicketService } from "@/network/tickets";
 import { TicketStyle } from "./Datatype";
 
-const HostGameDialog = () => {
+const HostGameDialog = ({
+  showText = true,
+  openDialog = false,
+}: {
+  showText?: boolean;
+  openDialog?: boolean;
+}) => {
   const router = useRouter();
   const { getTicketsLocal } = TicketService();
   const defaultTicket = [
-    [1, 15, 0, 37, 49, 0, 68, 72, 90],
-    [5, 0, 22, 39, 0, 59, 0, 79, 0],
-    [0, 18, 26, 0, 53, 62, 70, 0, 88],
+    89, 95, 0, 99, 0, 55, 79, 0, 0, 0, 1, 0, 9, 0, 65, 83, 90, 0, 36, 0, 73, 31,
+    0, 57, 0, 21, 0,
   ];
-  const [open, setOpen] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(openDialog);
   const localTicketDesign = getTicketsLocal();
 
   const ticketStyle: TicketStyle = {
@@ -33,10 +37,15 @@ const HostGameDialog = () => {
     borderColor: localTicketDesign?.Border ?? "#000000",
     color: localTicketDesign?.Text ?? "#000000",
   };
+  useEffect(() => {}, []);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="lg">Host Game</Button>
+        {showText ? (
+          <Button size="lg">Host Game</Button>
+        ) : (
+          <h1 className="text-gray-600 hover:text-primary">Host Game</h1>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
@@ -48,10 +57,7 @@ const HostGameDialog = () => {
         </DialogHeader>
 
         <TabolaTicketTemplate
-          ticketNumbers={[
-            89, 95, 0, 99, 0, 55, 79, 0, 0, 0, 1, 0, 9, 0, 65, 83, 90, 0, 36, 0,
-            73, 31, 0, 57, 0, 21, 0,
-          ]}
+          ticketNumbers={defaultTicket}
           hostName={localTicketDesign?.HostName ?? "HostName"}
           ticketStyle={ticketStyle}
           ticketId={"sampleTicket"}

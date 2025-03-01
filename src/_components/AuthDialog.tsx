@@ -21,14 +21,13 @@ import { NotificationProps, NotificationType } from "./Datatype";
 interface IAuthDialog {
   readonly defaultOpen?: boolean;
   readonly redirectPath?: string;
-  readonly onAuthSuccess?: () => void;
   readonly showButton?: boolean;
 }
 
 export default function AuthDialog({
   defaultOpen = false,
   redirectPath,
-  onAuthSuccess,
+
   showButton = true,
 }: IAuthDialog) {
   const { login, signup } = AuthService();
@@ -49,18 +48,12 @@ export default function AuthDialog({
 
   const handleNavigation = () => {
     setIsOpen(false);
-
-    if (onAuthSuccess) {
-      onAuthSuccess();
-    }
-
-    if (redirectPath) {
-      router.push(redirectPath);
-    } else if (searchParams.get("auth") === "required") {
-      const returnTo = searchParams.get("returnTo") ?? "/";
+    const returnTo = searchParams.get("returnTo") ?? "/";
+    try {
       router.push(returnTo);
-    } else {
       router.refresh();
+    } catch (e) {
+      console.log(e);
     }
   };
   const showNotification = (type: NotificationType, message: string) => {

@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 import { useRouter } from "next/navigation";
 import { TicketStyle } from "./Datatype";
+import HostGameDialog from "./HostGameDialog";
 
 interface ICustomizeTambolaTicket {
   setTicketStyle: React.Dispatch<React.SetStateAction<TicketStyle>>;
@@ -27,15 +28,12 @@ const CustomizeTambolaTicket = ({
   ticketStyle,
 }: ICustomizeTambolaTicket) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
   const { toast } = useToast();
   const router = useRouter();
 
-  const {
-    saveTicketsLocal,
-    getTicketsLocal,
-    saveTicketToDB,
-    generateUniqueRoomID,
-  } = TicketService();
+  const { saveTicketToDB } = TicketService();
 
   useEffect(() => {
     setIsMounted(true);
@@ -93,6 +91,7 @@ const CustomizeTambolaTicket = ({
 
   return (
     <div className="container mx-auto px-4 py-6">
+      
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Preview Section */}
         <div className="w-full lg:w-1/2 flex justify-center items-start">
@@ -214,7 +213,11 @@ const CustomizeTambolaTicket = ({
                             action: (
                               <ToastAction
                                 altText="Create Room"
-                                onClick={() => router.push("/HostEvent")}
+                                onClick={() => {
+                                  setIsOpen(true);
+
+                                  console.log("=================", isOpen);
+                                }}
                               >
                                 Create Room
                               </ToastAction>
