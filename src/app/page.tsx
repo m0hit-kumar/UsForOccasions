@@ -76,7 +76,7 @@ export default function Home() {
         {/* Game Modes Section */}
         <div className="text-center">
           <h2 className="text-3xl font-bold text-white mb-8">Game Modes</h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Real-Time Online */}
             <div className="bg-white rounded-xl p-6 py-12 shadow-xl h-80 flex flex-col justify-between">
               <div>
@@ -89,14 +89,6 @@ export default function Home() {
                 <p className="text-gray-600 mb-6 leading-relaxed text-center">
                   Play with friends and global players instantly. Auto-call, pure daub fun!
                 </p>
-              </div>
-              <div className="flex justify-center">
-                <Button 
-                  size="sm" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold"
-                >
-                  Play Now
-                </Button>
               </div>
             </div>
 
@@ -113,39 +105,8 @@ export default function Home() {
                   Download free, customizable tickets for your physical game night
                 </p>
               </div>
-              <div className="flex justify-center">
-                <Button 
-                  size="sm" 
-                  onClick={() => router.push("/GenerateTickets")}
-                  className="bg-orange-700 hover:bg-orange-800 text-white font-bold"
-                >
-                  Download Now
-                </Button>
-              </div>
             </div>
 
-            {/* How-To Guide */}
-            <div className="bg-blue-600 rounded-xl p-6 py-12 shadow-xl h-80 flex flex-col justify-between">
-              <div>
-                <div className="flex justify-center mb-4">
-                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <span className="text-2xl text-white">📖</span>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3 text-center">How-To Guide</h3>
-                <p className="text-white/90 mb-6 leading-relaxed text-center">
-                  New to Tambola? Learn all the hints and strategy in minutes!
-                </p>
-              </div>
-              <div className="flex justify-center">
-                <Button 
-                  size="sm" 
-                  className="bg-blue-800 hover:bg-blue-900 text-white font-bold"
-                >
-                  Watch Video
-                </Button>
-              </div>
-            </div>
           </div>
         </div>
       </div>
