@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { FillTambolaTicket } from "@/_components/TicketNumberGenerator";
-import { X, ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
+import { FillTambolaTicket, handleDownloadImage } from "@/_components/TicketNumberGenerator";
+import { X, ArrowLeft, RefreshCw, AlertCircle, Download } from "lucide-react";
 import { TicketService } from "@/network/tickets";
 import { IRoomStyle } from "@/_components/Datatype";
 import { Button } from "@/components/ui/button";
@@ -165,6 +165,7 @@ const GameRoom = () => {
   return (
     <div className="p-2 sm:p-4 w-full max-w-3xl mx-auto h-full">
       <div
+        id="playerTicket"
         className="border-2 p-2 sm:p-4 inline-block w-full max-w-full"
         style={{
           backgroundColor: roomStyle?.background,
@@ -206,6 +207,18 @@ const GameRoom = () => {
         >
           {`Room ID : ${roomStyle?.roomId}`}
         </div>
+      </div>
+      
+      {/* Download Button - Outside ticket container */}
+      <div className="mt-4 text-center">
+        <Button
+          onClick={() => handleDownloadImage("playerTicket")}
+          className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2"
+          size="sm"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          Download My Ticket
+        </Button>
       </div>
     </div>
   );
