@@ -2,16 +2,19 @@
 import CustomizeTambolaTicket from "@/_components/CustomizeTambolaTicket";
 import TicketGenrator from "@/_components/TicketGenrator";
 import React, { useEffect, useRef, useState } from "react";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { TicketStyle } from "@/_components/Datatype";
 import SendTambolaTickets from "@/_components/SendTambolaTickets";
 import { TicketService } from "@/network/tickets";
+import { useSearchParams, useRouter } from "next/navigation";
 
 const GenerateTickets = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const skipCustomize = searchParams.get('skipCustomize') === 'true';
+  
   const [ticketBinary, setTicketBinary] = useState<string[]>([]);
-  const [progressValue, setProgressValue] = useState<number>(100 / 3);
-  const [sectionValue, setSectinValue] = useState<number>(1);
+  const [sectionValue, setSectinValue] = useState<number>(skipCustomize ? 2 : 1);
   const {
     saveTicketsLocal,
     getTicketsLocal,
@@ -30,48 +33,22 @@ const GenerateTickets = () => {
     color: localTicketDesign?.Text ?? "#000000",
   });
 
-  const increment = () => {
-    setProgressValue((prevValue) => prevValue + 100 / 3);
-    setSectinValue((prevValue) => prevValue + 1);
-  };
-
-  const decrement = () => {
-    setProgressValue((prevValue) => prevValue - 100 / 3);
-    setSectinValue((prevValue) => prevValue - 1);
-  };
 
   return (
     <div className="flex-1 container mx-auto py-6 sm:py-12 px-4 sm:px-6">
+      {/* Back Button */}
+      <div className="mb-6">
+        <Button
+          onClick={() => router.back()}
+          variant="outline"
+          className="bg-white/20 backdrop-blur-sm border-white/30 text-white hover:bg-white/30 hover:text-white"
+        >
+          ← Back
+        </Button>
+      </div>
+      
       <div className="space-y-4 sm:space-y-5">
-        <h2 className="text-3xl font-bold mb-5">Welcome to Tambola</h2>
-
-        <Progress
-          value={progressValue}
-          className="w-full bg-white shadow-sm my-4"
-        />
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <p className="text-lg">
-            Generate, distribute, and play Tambola tickets online or offline.
-          </p>
-
-          <div className="flex gap-2 self-end">
-            <Button
-              className="mx-1"
-              onClick={decrement}
-              disabled={progressValue <= 100 / 3}
-            >
-              Previous
-            </Button>
-            <Button
-              className="mx-1"
-              onClick={increment}
-              disabled={progressValue === 100}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <h2 className="text-3xl font-bold mb-5 text-white">Generate & Download Tickets</h2>
       </div>
 
       <div className="mt-6 sm:mt-8">

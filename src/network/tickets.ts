@@ -1,10 +1,15 @@
 "use client";
 
 import { TicketsData } from "@/_components/Datatype";
-import axios from "axios";
+import { FirebaseService } from "./firebaseService";
 
 export const TicketService = () => {
   const setCookie = (name: string, value: string, hours: number): void => {
+    // Check if we're on the client side
+    if (typeof window === "undefined") {
+      return;
+    }
+    
     const date = new Date();
     date.setTime(date.getTime() + hours * 60 * 60 * 1000);
     const expires = `expires=${date.toUTCString()}`;
@@ -24,6 +29,11 @@ export const TicketService = () => {
   };
 
   const getTicketsLocal = (): { [key: string]: string } | null => {
+    // Check if we're on the client side
+    if (typeof window === "undefined") {
+      return null;
+    }
+    
     const cookieValue = document.cookie
       .split("; ")
       .find((row) => row.startsWith("TicketsData="));
@@ -37,6 +47,11 @@ export const TicketService = () => {
   const getTicketBasedOnRoomId = (
     roomId: string
   ): { [key: string]: string } | null => {
+    // Check if we're on the client side
+    if (typeof window === "undefined") {
+      return null;
+    }
+    
     const cookieValue = document.cookie
       .split("; ")
       .find((row) => row.startsWith(`${roomId}=`));
@@ -69,58 +84,58 @@ export const TicketService = () => {
     return ticketsData;
   };
 
-  // Network calls
-
-  const URL = "http://localhost:8080/api";
+  // Firebase service
+  const firebaseService = FirebaseService();
 
   const saveTicketToDB = (
     { hostNameValue, backgroundValue, borderValue, textValue }: TicketsData,
     callback: (success: boolean, error?: any, response?: any) => void
   ) => {
+    // Save to local storage first
     var ticket = saveTicketsLocal({
       hostNameValue,
       backgroundValue,
       borderValue,
       textValue,
     });
-    axios({
-      method: "post",
-      withCredentials: true,
-      url: `${URL}/create_ticketDesign`,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: {
-        hostName: ticket.HostName,
-        background: ticket.Background,
-        border: ticket.Border,
-        text: ticket.Text,
-        roomId: ticket.SystemID,
-      },
-    })
-      .then((response) => {
-        callback(true, null, response.data);
-      })
-      .catch((error) => {
-        callback(false, error);
-      });
+
+    // Save to Firebase
+    firebaseService.saveTicketDesign(
+      { hostNameValue, backgroundValue, borderValue, textValue },
+      callback
+    );
   };
+
   const getTicketFromDB = (
     { roomId }: any,
     callback: (success: boolean, error?: any, response?: any) => void
   ) => {
-    axios({
-      method: "get",
-      url: `${URL}/ticketDesign/${roomId}`,
-      withCredentials: true,
-    })
-      .then((response) => {
-        callback(true, null, response.data);
-      })
-      .catch((error) => {
-        callback(false, error);
-      })
-      .finally(() => console.log("Room joined"));
+    firebaseService.getRoomData(roomId, callback);
+  };
+
+  const createRoom = (
+    { hostNameValue, backgroundValue, borderValue, textValue }: TicketsData,
+    callback: (success: boolean, error?: any, response?: any) => void
+  ) => {
+    // Save to local storage first
+    var ticket = saveTicketsLocal({
+      hostNameValue,
+      backgroundValue,
+      borderValue,
+      textValue,
+    });
+
+    // Create room in Firebase
+    firebaseService.createRoom(
+      { hostNameValue, backgroundValue, borderValue, textValue },
+      callback
+    );
+  };
+
+  const createDefaultTicket = (
+    callback: (success: boolean, error?: any, response?: any) => void
+  ) => {
+    firebaseService.createDefaultTicket(callback);
   };
 
   return {
@@ -131,5 +146,7 @@ export const TicketService = () => {
     getTicketFromDB,
     getTicketBasedOnRoomId,
     setCookie,
+    createRoom,
+    createDefaultTicket,
   };
 };

@@ -33,7 +33,7 @@ const CustomizeTambolaTicket = ({
   const { toast } = useToast();
   const router = useRouter();
 
-  const { saveTicketToDB } = TicketService();
+  const { createRoom, saveTicketsLocal } = TicketService();
 
   useEffect(() => {
     setIsMounted(true);
@@ -94,7 +94,7 @@ const CustomizeTambolaTicket = ({
       
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Preview Section */}
-        <div className="w-full lg:w-1/2 flex justify-center items-start">
+        <div className="w-full lg:w-1/2 flex flex-col items-center">
           <div className="printme" id="sampleTicket">
             <TabolaTicketTemplate
               ticketNumbers={[
@@ -106,6 +106,19 @@ const CustomizeTambolaTicket = ({
               ticketId={"sampleTicket"}
               code={"1234"}
             />
+          </div>
+          
+          {/* Download Sample Button Below Preview */}
+          <div className="mt-6 text-center">
+            <Button
+              onClick={() => handleDownloadImage("sampleTicket")}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3"
+            >
+              Download Sample
+            </Button>
+            <p className="text-sm text-white mt-2 max-w-xs">
+              Press to download sample ticket
+            </p>
           </div>
         </div>
 
@@ -190,15 +203,26 @@ const CustomizeTambolaTicket = ({
               <div className="flex flex-col sm:flex-row gap-2 pt-4">
                 <Button
                   className="flex-1"
-                  onClick={() => handleDownloadImage("sampleTicket")}
+                  onClick={() => {
+                    // Save design locally using the proper TicketService function
+                    saveTicketsLocal({
+                      hostNameValue: hostName,
+                      backgroundValue: ticketStyle.backgroundColor,
+                      borderValue: ticketStyle.borderColor,
+                      textValue: ticketStyle.color,
+                    });
+                    
+                    // Then navigate to download page
+                    router.push("/GenerateTickets?skipCustomize=true");
+                  }}
                 >
-                  Download Sample
+                  Save Design & Download for Offline Play
                 </Button>
                 <Button
                   className="flex-1"
                   variant="outline"
                   onClick={() => {
-                    saveTicketToDB(
+                    createRoom(
                       {
                         textValue: ticketStyle.color,
                         backgroundValue: ticketStyle.backgroundColor,
@@ -207,33 +231,31 @@ const CustomizeTambolaTicket = ({
                       },
                       (success, error, response) => {
                         if (success) {
-                          console.log(response);
+                          const roomId = response.roomId;
+                          const roomLink = `${window.location.origin}/${roomId}`;
+                          
+                          // Save room info to localStorage for HostEvent page
+                          localStorage.setItem('currentRoomId', roomId);
+                          localStorage.setItem('currentRoomLink', roomLink);
+                          
                           toast({
-                            description: "Ticket design has been saved.",
-                            action: (
-                              <ToastAction
-                                altText="Create Room"
-                                onClick={() => {
-                                  setIsOpen(true);
-
-                                  console.log("=================", isOpen);
-                                }}
-                              >
-                                Create Room
-                              </ToastAction>
-                            ),
+                            title: "Room created successfully!",
+                            description: `Redirecting to game...`,
                           });
+                          
+                          // Navigate to HostEvent page
+                          router.push("/HostEvent");
                         } else {
                           toast({
                             title: "Try Again!",
-                            description: "Ticket design has was not saved.",
+                            description: "Ticket design was not saved.",
                           });
                         }
                       }
                     );
                   }}
                 >
-                  Save Ticket
+                  Save & Start Online Game
                 </Button>
               </div>
             </CardContent>
