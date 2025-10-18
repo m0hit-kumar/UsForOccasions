@@ -50,9 +50,11 @@ export default function SimpleFirebaseTest() {
         
       } catch (error) {
         console.error('Firebase test error:', error);
-        addLog(`❌ Error: ${error.message}`);
-        addLog(`❌ Error code: ${error.code || 'Unknown'}`);
-        setStatus(`❌ Firebase test failed: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const errorCode = (error as any)?.code || 'Unknown';
+        addLog(`❌ Error: ${errorMessage}`);
+        addLog(`❌ Error code: ${errorCode}`);
+        setStatus(`❌ Firebase test failed: ${errorMessage}`);
       }
     };
 

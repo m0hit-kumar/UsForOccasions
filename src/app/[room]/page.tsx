@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { FillTambolaTicket } from "@/_components/TicketNumberGenerator";
 import { X, ArrowLeft, RefreshCw, AlertCircle } from "lucide-react";
@@ -35,7 +35,7 @@ const GameRoom = () => {
     }
   };
 
-  const createRoom = async () => {
+  const createRoom = useCallback(async () => {
     console.log('Joining room:', pathname);
     setIsLoading(true);
     setRoomNotFound(false);
@@ -79,7 +79,7 @@ const GameRoom = () => {
         
       }
     });
-  };
+  }, [pathname, getTicketFromDB, getTicketBasedOnRoomId, saveTicketNumbers, setNumbers, setRoomStyle, setIsLoading, setRoomNotFound]);
   useEffect(() => {
     createRoom();
   }, [createRoom]);

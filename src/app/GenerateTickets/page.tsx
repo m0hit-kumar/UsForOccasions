@@ -1,14 +1,14 @@
 "use client";
 import CustomizeTambolaTicket from "@/_components/CustomizeTambolaTicket";
 import TicketGenrator from "@/_components/TicketGenrator";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { TicketStyle } from "@/_components/Datatype";
 import SendTambolaTickets from "@/_components/SendTambolaTickets";
 import { TicketService } from "@/network/tickets";
 import { useSearchParams, useRouter } from "next/navigation";
 
-const GenerateTickets = () => {
+const GenerateTicketsContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const skipCustomize = searchParams.get('skipCustomize') === 'true';
@@ -73,6 +73,14 @@ const GenerateTickets = () => {
         )}
       </div>
     </div>
+  );
+};
+
+const GenerateTickets = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <GenerateTicketsContent />
+    </Suspense>
   );
 };
 
