@@ -1,39 +1,17 @@
-"use client"
-import type { Metadata } from "next";
+"use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/_components/Header";
 import Footer from "@/_components/Footer";
-import { PublicClientApplication, EventType, EventMessage, AuthenticationResult } from "@azure/msal-browser";
-import { msalConfig } from "../graphApi/authConfig";
-import { MsalProvider } from "@azure/msal-react";
-
+import { Toaster } from "@/components/ui/toaster";
+// AUTHENTICATION DISABLED - Uncomment below to re-enable authentication
+// import { useEffect, useState } from "react";
+// import type { NextRequest } from "next/server";
 
 const inter = Inter({
   subsets: ["latin"],
-  display: 'swap',
-  variable: '--font-inter',
-});
-
-// export const metadata: Metadata = {
-//   title: "Tabola",
-//   description: "Tabola for fun",
-// };
-const msalInstance = new PublicClientApplication(msalConfig);
-// Default to using the first account if no account is active on page load
-if (!msalInstance.getActiveAccount() && msalInstance.getAllAccounts().length > 0) {
-  // Account selection logic is app dependent. Adjust as needed for different use cases.
-  msalInstance.setActiveAccount(msalInstance.getAllAccounts()[0]);
-}
-
-msalInstance.addEventCallback((event) => {
-  if (event.eventType === EventType.LOGIN_SUCCESS && event.payload) {
-    const payload = event.payload as AuthenticationResult;
-    const account = payload.account;
-    msalInstance.setActiveAccount(account);
-
-
-  }
+  display: "swap",
+  variable: "--font-inter",
 });
 
 export default function RootLayout({
@@ -41,19 +19,52 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en">
-      <body className={inter.className}>
-        <MsalProvider instance={msalInstance}>
+  // AUTHENTICATION DISABLED - Uncomment below to re-enable authentication
+  // const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-          <div className=" overflow-x-hidden flex flex-col h-screen bg-gray-100 dark:bg-gray-900">
-            <Header />
-            {children}
-            <Footer />
-          </div></MsalProvider>
-      </body>
-    </html>
+  // const checkAuthToken = () => {
+  //   const token = document.cookie
+  //     .split("; ")
+  //     .find((row) => row.startsWith("token="));
+  //   if (token) setIsLoggedIn(true); // Set the state based on token presence
+  // };
 
+  // useEffect(() => {
+  //   checkAuthToken(); // Check on initial load
 
-  );
+  //   // Optionally, you could listen for changes to the cookies if needed
+  //   const interval = setInterval(() => {
+  //     checkAuthToken();
+  //   }, 1000); // Polling to check if token changes (could be optimized)
+
+  //   return () => clearInterval(interval); // Clean up
+  // }, []);
+
+      return (
+        <html lang="en">
+          <body className={inter.className}>
+            <div className="overflow-x-hidden flex flex-col min-h-screen relative overflow-y-auto">
+              {/* Background Image */}
+              <div 
+                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: 'url(/image.png)',
+                }}
+              ></div>
+              
+              {/* Dark overlay for better text readability */}
+              <div className="absolute inset-0 bg-black/40"></div>
+              
+              {/* Content */}
+              <div className="relative z-10 flex flex-col min-h-screen">
+                <div className="flex-1">
+                  {children}
+                </div>
+                <Footer />
+              </div>
+              <Toaster />
+            </div>
+          </body>
+        </html>
+      );
 }

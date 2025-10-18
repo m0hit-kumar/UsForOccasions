@@ -1,63 +1,115 @@
-'use client'
-import { useRouter } from 'next/navigation'
-import { Button } from "@/components/ui/button"
+"use client";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import TicketIcon from "@/_components/TicketIcon";
 import DownloadIcon from "@/_components/DownloadIcon";
 import ShareIcon from "@/_components/ShareIcon";
+import HostGameDialog from "@/_components/HostGameDialog";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+// AUTHENTICATION DISABLED - Uncomment below to re-enable authentication
+// import InfoBox from "@/_components/InfoBox";
 
 export default function Home() {
-  const router = useRouter()
+  const router = useRouter();
+  const [roomCode, setRoomCode] = useState("");
+  const { toast } = useToast();
+
+  const handleJoinGame = () => {
+    if (!roomCode.trim()) {
+      toast({
+        title: "Room code required",
+        description: "Please enter a room code to join the game.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Navigate to the room
+    router.push(`/${roomCode.trim()}`);
+  };
+
   return (
-    <main className="flex-1 container mx-auto py-12 px-6 md:px-0">
-      <section className="grid md:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-bold mb-4">Play Online</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Click Host Game button to host tambola game.
-          </p>
-          <Button size="lg" onClick={() => router.push("/HostEvent")} >
-            Host Game
-          </Button>
-        </div>
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6" >
-          <h2 className="text-2xl font-bold mb-4">Generate Tickets</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            Create and distribute Tombola tickets to your friends and family for offline play.
-          </p>
-          <Button size="lg" onClick={() => router.push("/GenerateTickets")
-          } >
-            Generate Tickets
-          </Button>
-        </div>
-      </section>
-      <section className="mt-12">
-        <h2 className="text-2xl font-bold mb-4">How to Play</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <TicketIcon className="h-12 w-12 text-primary mb-4" />
-            <h3 className="text-xl font-bold mb-2">Online Play</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Join our online Tombola games and play in real-time with friends and other players.
+    <main className="flex-1 relative">
+      {/* Main content */}
+      <div className="relative z-10 container mx-auto py-16 px-6 md:px-0">
+        {/* Hero Section */}
+        <div className="mb-16">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-4 drop-shadow-lg">
+              Tambola Online: Your Next Game Night Starts Now
+            </h1>
+            <p className="text-xl text-white/90 mb-8">
+              Play for Fun, Win Big with Friends & Family Anywhere
             </p>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <DownloadIcon className="h-12 w-12 text-primary mb-4" />
-            <h3 className="text-xl font-bold mb-2">Offline Play</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Download Tombola tickets and play offline with your friends and family.
-            </p>
-          </div>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-            <ShareIcon className="h-12 w-12 text-primary mb-4" />
-            <h3 className="text-xl font-bold mb-2">Ticket Distribution</h3>
-            <p className="text-gray-600 dark:text-gray-400">
-              Share your Tombola tickets with others via email, messaging apps, or social media.
-            </p>
+          
+          {/* Action buttons - Left and Right alignment */}
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-8 mb-16 max-w-6xl mx-auto">
+            {/* Left side - CREATE ROOM */}
+            <div className="flex flex-col items-start">
+              <HostGameDialog showText={true} />
+            </div>
+            
+            {/* Right side - JOIN GAME */}
+            <div className="flex flex-col items-end">
+              <div className="space-y-3">
+                <Input
+                  placeholder="Enter room code"
+                  value={roomCode}
+                  onChange={(e) => setRoomCode(e.target.value)}
+                  className="w-48 bg-white border-2 border-white rounded-lg px-4 py-3 text-center font-semibold text-gray-800 placeholder-gray-600"
+                />
+                <Button 
+                  size="lg" 
+                  onClick={handleJoinGame}
+                  className="w-48 bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg"
+                >
+                  JOIN GAME
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </section>
+
+        {/* Game Modes Section */}
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-white mb-8">Game Modes</h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Real-Time Online */}
+            <div className="bg-white rounded-xl p-6 py-12 shadow-xl h-80 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                    <span className="text-2xl">⚡</span>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">Real-Time Online</h3>
+                <p className="text-gray-600 mb-6 leading-relaxed text-center">
+                  Play with friends and global players instantly. Auto-call, pure daub fun!
+                </p>
+              </div>
+            </div>
+
+            {/* Generate & Print Tickets */}
+            <div className="bg-orange-500 rounded-xl p-6 py-12 shadow-xl h-80 flex flex-col justify-between">
+              <div>
+                <div className="flex justify-center mb-4">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <span className="text-2xl text-white">🖨️</span>
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3 text-center">Generate & Print Tickets</h3>
+                <p className="text-white/90 mb-6 leading-relaxed text-center">
+                  Download free, customizable tickets for your physical game night
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
     </main>
-
-
   );
 }
