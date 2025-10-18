@@ -80,9 +80,11 @@ const GameRoom = () => {
       }
     });
   }, [pathname, getTicketFromDB, getTicketBasedOnRoomId, saveTicketNumbers, setNumbers, setRoomStyle, setIsLoading, setRoomNotFound]);
+  
   useEffect(() => {
+    // Only fetch data once when component mounts
     createRoom();
-  }, [createRoom]);
+  }, []); // Empty dependency array - runs only once on mount
 
   const toggleTile = (index: number) => {
     setClickedTiles((prev) => {
