@@ -82,7 +82,7 @@ const GameRoom = () => {
   };
   useEffect(() => {
     createRoom();
-  }, []);
+  }, [createRoom]);
 
   const toggleTile = (index: number) => {
     setClickedTiles((prev) => {
